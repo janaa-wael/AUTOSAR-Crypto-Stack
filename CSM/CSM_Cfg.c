@@ -33,7 +33,15 @@ Std_ReturnType Csm_Init(const Csm_ConfigType *config)
 /* Deinitialize the CSM */
 Std_ReturnType Csm_DeInit(void)
 {
+    if(Csm_ConfigPtr == NULL)
+    {
+        return E_NOT_OK;
+    }
+    
+    Csm_ConfigPtr = NULL;
 
+    Csm_Initialized = false;
+    return E_OK;
 }
 
 /* Start a new crypto job */
