@@ -5,21 +5,21 @@
 static bool Csm_Initialized = false;
 static Csm_JobRecord Csm_JobTable[CSM_MAX_JOBS];
 static Csm_JobCompleteCallbackType Csm_JobCb = NULL;
-static const Csm_ConfigType* Csm_ConfigPtr = NULL;
+static const Csm_ConfigType *Csm_ConfigPtr = NULL;
 
 /* ===================[API Implementation]=================== */
 
 /* Initialize CSM with a configuration */
 Std_ReturnType Csm_Init(const Csm_ConfigType *config)
 {
-    if(config == NULL) 
+    if (config == NULL)
     {
         return E_NOT_OK;
-    }  
+    }
 
     Csm_ConfigPtr = config;
 
-    for(uint32_t i = 0; i < Csm_ConfigPtr->maxJobs; i++)
+    for (uint32_t i = 0; i < Csm_ConfigPtr->maxJobs; i++)
     {
         Csm_JobTable[i].state = JOB_IDLE;
         Csm_JobTable[i].driverCtx = NULL;
@@ -33,19 +33,42 @@ Std_ReturnType Csm_Init(const Csm_ConfigType *config)
 /* Deinitialize the CSM */
 Std_ReturnType Csm_DeInit(void)
 {
-    if(Csm_ConfigPtr == NULL)
+    if (Csm_ConfigPtr == NULL)
     {
         return E_NOT_OK;
     }
-    
+
     Csm_ConfigPtr = NULL;
 
     Csm_Initialized = false;
     return E_OK;
 }
 
-/* Start a new crypto job */
 Std_ReturnType Csm_StartJob(const Csm_JobType *job)
 {
+    if (!Csm_Initialized || job == NULL) {
+        return E_NOT_OK;
+    }
 
+    /* Find a free job slot */
+    int slot = -1;
+    for (uint32_t i = 0; i < CSM_MAX_JOBS; i++) {
+        if (Csm_JobTable[i].state == JOB_IDLE) {
+            slot = i;
+            break;
+        }
+    }
+    if (slot == -1) {
+        return E_BUSY;  /* No free slots */
+    }
+
+    /* Copy job into slot */
+    Csm_JobTable[slot].job = *job;
+    Csm_JobTable[slot].state = JOB_RUNNING;
+
+    Std_ReturnType result = E_NOT_OK;
+
+    /* Look up primitive mapping from configuration */
+    
+    return result;
 }
