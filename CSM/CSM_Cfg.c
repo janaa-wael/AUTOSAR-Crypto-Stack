@@ -127,7 +127,6 @@ Std_ReturnType Csm_CancelJob(Csm_JobIdType jobId)
                 {
                     Csm_JobCb(jobId, E_NOT_OK, Csm_JobTable[i].job.userCtx);
                 }
-
                 return E_OK;
             }
             else
@@ -141,5 +140,8 @@ Std_ReturnType Csm_CancelJob(Csm_JobIdType jobId)
 
 void Csm_SetJobCompleteCallback(Csm_JobCompleteCallbackType cb)
 {
-
+    if(cb != NULL)
+    {
+        Csm_JobCb = cb;
+    }   
 }
