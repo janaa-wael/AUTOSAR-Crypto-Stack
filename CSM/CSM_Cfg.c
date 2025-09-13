@@ -107,3 +107,39 @@ Std_ReturnType Csm_StartJob(const Csm_JobType *job)
 
     return result;
 }
+
+Std_ReturnType Csm_CancelJob(Csm_JobIdType jobId)
+{
+   
+    if(jobId > CSM_MAX_JOBS || !Csm_Initialized) {
+        return E_NOT_OK;
+    }
+    
+    for(uint32_t i = 0; i < CSM_MAX_JOBS; i++)
+    {
+        if(Csm_JobTable[i].job.jobId == jobId && Csm_JobTable[i].state != JOB_IDLE)
+        {
+            if (Csm_JobTable[i].state == JOB_RUNNING || Csm_JobTable[i].state == JOB_PENDING) 
+            {
+                Csm_JobTable[i].state = JOB_IDLE;
+                /* Notify application if callback is registered */
+                if (Csm_JobCb != NULL) 
+                {
+                    Csm_JobCb(jobId, E_NOT_OK, Csm_JobTable[i].job.userCtx);
+                }
+
+                return E_OK;
+            }
+            else
+            {
+                return E_NOT_OK;
+            }
+        }
+    }
+    return E_NOT_OK;
+}
+
+void Csm_SetJobCompleteCallback(Csm_JobCompleteCallbackType cb)
+{
+
+}
