@@ -84,11 +84,6 @@ extern Csm_JobCompleteCallbackType Csm_JobCompleteCallback;
 #define CSM_INVALID_KEY_ID   ((Csm_KeyIdType)0xFFFFFFFFu)
 #define CSM_INVALID_JOB_ID   ((Csm_JobIdType)0xFFFFFFFFu)
 
-/* ===================[Optional API Declarations]=================== */
-Std_ReturnType Csm_Init(const Csm_ConfigType *config);
-Std_ReturnType Csm_DeInit(void);
-Std_ReturnType Csm_StartJob(const Csm_JobType *job);
-Std_ReturnType Csm_CancelJob(Csm_JobIdType jobId);
-void           Csm_SetJobCompleteCallback(Csm_JobCompleteCallbackType cb);
+
 
 #endif
