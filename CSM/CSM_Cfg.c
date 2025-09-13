@@ -68,7 +68,42 @@ Std_ReturnType Csm_StartJob(const Csm_JobType *job)
 
     Std_ReturnType result = E_NOT_OK;
 
-    /* Look up primitive mapping from configuration */
-    
+    /* === Look up primitive mapping from configuration === */
+    if (Csm_ConfigPtr != NULL) 
+    {
+        for (uint32_t i = 0; i < Csm_ConfigPtr->numPrimitiveMap; i++) 
+        {
+            if (Csm_ConfigPtr->primitiveMap[i].primitive == job->primitive) 
+            {
+                Csm_PrimitiveDriverIdType driverId = Csm_ConfigPtr->primitiveMap[i].driverId;
+
+                /* Dispatch to CryIf (stub for now, replace with real driver calls) */
+                result = CryIf_ProcessPrimitive(driverId, job);
+
+                break;
+            }
+        }
+    }
+
+    /* Update state */
+    if (result == E_OK) 
+    {
+        Csm_JobTable[slot].state = JOB_DONE;
+    } 
+    else if (result == E_PENDING) 
+    {
+        Csm_JobTable[slot].state = JOB_PENDING;
+    } 
+    else 
+    {
+        Csm_JobTable[slot].state = JOB_ERROR;
+    }
+
+    /* Notify application immediately if not async */
+    if (Csm_JobCb && result != E_PENDING) 
+    {
+        Csm_JobCb(job->jobId, result, job->userCtx);
+    }
+
     return result;
 }
